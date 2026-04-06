@@ -1,49 +1,30 @@
-// crud.js
-import { database } from "./firebaseConfig.js";
-import {
-  ref,
-  push,
-  set,
-  child,
-  remove
-} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { db } from "./firebaseConfig.js";
+import { ref, push, remove } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-const pessoasRef = ref(database, "temperatura");
+// 🔹 Salvar temperatura
+export async function salvarTemperatura(temp) {
+  try {
+    const referencia = ref(db, "temperaturas");
+    await push(referencia, {
+      valor: temp,
+      data: new Date().toISOString()
+    });
+  } catch (erro) {
+    console.error("Erro ao salvar:", erro);
+  }
+}
 
-// Salvar – grava e espera a conclusão
-export async function salvar(temperatura) {
-  const novoItemRef = await push(pessoasRef);
-  await set(novoItemRef, { nome, idade, genero });
+// 🔹 Deletar todas as temperaturas
+export async function limparTemperaturas() {
+  try {
+    const referencia = ref(db, "temperaturas");
+    await remove(referencia);
+  } catch (erro) {
+    console.error("Erro ao deletar:", erro);
+  }
 }
 
 
-// Deletar – remove o nó e espera a conclusão
-export async function deletar(temperatura) {
-  const itemRef = child(pessoasRef, temperatura);
-  await remove(itemRef);
-}
+// "🔹 Salvar temperatura" recebe uma temperatura e adiciona essa temperatura junto com o tempo em que ela foi tirada no database 
 
-
-
-// Resumo das principais funções do SDK modular do Firebase Realtime Database:
-
-// ref(database, path?)
-// Cria um ponteiro (Reference) para um nó do banco de dados, na raiz ou em um caminho específico.
-
-// push(ref)
-// Gera um novo filho com chave única de forma automática e retorna um Reference a esse nó.
-
-// set(ref, value)
-// Grava ou substitui completamente o valor do nó apontado por ref com o objeto fornecido.
-
-// get(ref)
-// Lê os dados de ref uma única vez e retorna uma Promise que resolve num DataSnapshot.
-
-// child(ref, childPath)
-// Cria um Reference para um filho de ref, sem precisar concatenar strings manualmente.
-
-// update(ref, values)
-// Atualiza somente as propriedades indicadas em values, preservando os demais dados do nó.
-
-// remove(ref)
-// Exclui completamente o nó referenciado (e todos os seus filhos).
+// "🔹 Deletar todas as temperaturas" remove todas as temperaturas do database
