@@ -20,20 +20,55 @@ main{
     background: linear-gradient(140deg,rgba(235, 147, 250, 1) 62%, rgba(106, 142, 184, 1) 97%);
 }
 
-#grafico{
-    height: 55vh;
-    width: 50vw;
+#local-grafico{
+    height: 65vh;
+    width: 60vw;
     border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0px 0px 10px black;
     background-color: rgba(235, 147, 250, 1);
 }
 
+#grafico{
+    height: 55vh;
+    width: 50vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4vh;
+    flex-direction: column;
+}
 
+#botoes{
+    width: 30vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
 
+#botoes button{
+    height: 4vh;
+    width: 7vw;
+    border-radius: 100px;
+    border: none;
+    background-color: aqua;
+    transition: 0.5s ease;
+    cursor: pointer;
+}
 
+#botao-iniciar:hover{
+    background-color: greenyellow;
+}
 
-
-
+#botao-parar:hover{
+    background-color: red;
+}
+#botao-limpar:hover{
+    background-color: black;
+    color: white;
+}
 
 
 footer{
