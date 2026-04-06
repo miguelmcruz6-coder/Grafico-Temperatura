@@ -1,88 +1,77 @@
-// main.js
-import { salvar, deletar } from "./crud.js";
+import { salvarTemperatura, limparTemperaturas } from "./crud.js";
 
-// elementos do DOM
-const canva = document.getElementById("grafico-temperatura");
+const canvas = document.getElementById("grafico-temperatura");
+
+if (!canvas) throw new Error("Canvas não encontrado!");
+if (typeof Chart === "undefined") throw new Error("Chart.js não carregou!");
+
+const ctx = canvas.getContext("2d");
 const iniciar = document.getElementById("botao-iniciar");
 const parar = document.getElementById("botao-parar");
+const limpar = document.getElementById("botao-limpar");
 
-let temporarisador = null;
-let continuar = false
-let temperatura = null
+let temporizador = null;
+let dados = [];
+let labels = [];
 
-// Cadastrar ou atualizar
-iniciar.addEventListener("click", async () => {
-  continuar = true
-  temporarisador = 5000
-  while(continuar){
-    temperatura = Math.floor(Math.random() * (30 - 35))
-
+// Criar gráfico
+const grafico = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "Temperatura (°C)",
+      data: dados,
+      borderColor: "red",
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { min: 30, max: 35 }
+    }
   }
 });
 
-// Filtrar enquanto digita
-buscaInput.addEventListener("input", () =>
-  atualizarLista(buscaInput.value.toLowerCase())
-);
-
-// Função para renderizar um único item
-function renderItem(id, p, filtro) {
-  if (!p.nome.toLowerCase().includes(filtro)) return;
-
-  const li = document.createElement("li");
-  li.innerHTML = `
-    <span><strong>${p.nome}</strong> — ${p.idade} anos - Gênero: ${p.genero}</span>
-    <div>
-      <button class="btn-editar">Editar</button>
-      <button class="btn-excluir">Excluir</button>
-    </div>
-  `;
-
-  // editar
-  li.querySelector(".btn-editar").addEventListener("click", () => {
-    nomeInput.value = p.nome;
-    idadeInput.value = p.idade;
-    generoInput.value = p.genero || "";
-    idEditando = id;
-    btnSalvar.textContent = "Atualizar";
-  });
-
-  // excluir
-  li.querySelector(".btn-excluir").addEventListener("click", async () => {
-    if (confirm("Excluir este cadastro?")) {
-      try {
-        await deletar(id);
-        await atualizarLista(filtro);
-      } catch (err) {
-        console.error("Erro ao excluir:", err);
-        alert("Ocorreu um erro ao excluir o cadastro.");
-      }
-    }
-  });
-
-  lista.appendChild(li);
+// Função de temperatura
+function gerarTemperatura() {
+  return Number((Math.random() * 5 + 30).toFixed(2));
 }
 
-// Função para listar dados no DOM, com filtro simples
-async function atualizarLista(filtro = "") {
-  try {
-    const dados = await buscarTodos();
-    lista.innerHTML = "";
+// Iniciar
+iniciar.addEventListener("click", () => {
+  if (temporizador) return;
 
-    // Itera sobre os dados e aplica o filtro no nome
-    for (let id in dados) {
-      const pessoa = dados[id];
+  temporizador = setInterval(async () => {
+    const temp = gerarTemperatura();
+    const tempo = new Date().toLocaleTimeString();
 
-      // Filtro de nome
-      if (pessoa.nome.toLowerCase().includes(filtro.toLowerCase())) {
-        renderItem(id, pessoa, filtro);
-      }
-    }
-  } catch (err) {
-    console.error("Erro ao buscar dados:", err);
-    alert("Não foi possível carregar a lista.");
-  }
-}
+    dados.push(temp);
+    labels.push(tempo);
+    grafico.update();
 
-// Carregar lista ao abrir a página
-window.addEventListener("load", () => atualizarLista());
+    // 🔥 salva no Realtime Database
+    await salvarTemperatura(temp);
+
+  }, 2000);
+});
+
+// Parar
+parar.addEventListener("click", () => {
+  clearInterval(temporizador);
+  temporizador = null;
+});
+
+// Limpar Histórico
+limpar.addEventListener("click", async () => {
+  // Limpa o gráfico localmente
+  dados = [];
+  labels = [];
+  grafico.data.labels = labels;
+  grafico.data.datasets[0].data = dados;
+  grafico.update();
+
+  // 🔥 Limpa também o Realtime Database
+  await limparTemperaturas();
+});
