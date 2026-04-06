@@ -6,19 +6,22 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database-compat.js"></script>
   </head>
   <body>
     <header></header>
     <main>
-      <div id="grafico">
-        <canvas id="grafico-temperatura"></canvas>
-        <button id="botao-iniciar">Iniciar</button>
-        <button id="botao-parar">Parar</button>
+      <div id="local-grafico">
+        <div id="grafico">
+          <canvas id="grafico-temperatura"></canvas>
+          <div id="botoes">
+            <button id="botao-iniciar">Iniciar</button>
+            <button id="botao-parar">Parar</button>
+            <button id="botao-limpar">Limpar Histórico</button>
+          </div>
+        </div>
       </div>
     </main>
     <footer></footer>
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
